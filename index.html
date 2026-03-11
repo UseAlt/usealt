@@ -12,8 +12,6 @@ background:#f5f5f5;
 text-align:center;
 }
 
-/* HEADER BAR */
-
 .header{
 position:fixed;
 top:0;
@@ -26,8 +24,6 @@ font-weight:bold;
 z-index:1000;
 }
 
-/* MENU BUTTON */
-
 .menu-btn{
 position:absolute;
 left:20px;
@@ -35,8 +31,6 @@ top:15px;
 font-size:28px;
 cursor:pointer;
 }
-
-/* SIDE MENU */
 
 .side-menu{
 height:100%;
@@ -71,8 +65,6 @@ display:block;
 background:#333;
 }
 
-/* HERO SECTION */
-
 .hero{
 margin-top:160px;
 }
@@ -102,8 +94,6 @@ color:white;
 cursor:pointer;
 }
 
-/* INSTALL BUTTON */
-
 .install-btn{
 margin-top:25px;
 padding:14px 30px;
@@ -115,13 +105,9 @@ color:white;
 cursor:pointer;
 }
 
-/* RESULTS SECTION */
-
 .results{
 margin-top:120px;
 }
-
-/* TABLE STYLE */
 
 table{
 margin:auto;
@@ -147,8 +133,6 @@ tr:hover{
 background:#f0f6ff;
 }
 
-/* SUMMARY */
-
 .summary{
 margin-top:20px;
 font-weight:bold;
@@ -161,14 +145,10 @@ font-size:18px;
 
 <body>
 
-<!-- HEADER -->
-
 <div class="header">
 <span class="menu-btn" onclick="openMenu()">☰</span>
 UseALT
 </div>
-
-<!-- SIDE MENU -->
 
 <div id="menu" class="side-menu">
 
@@ -182,13 +162,11 @@ UseALT
 
 </div>
 
-<!-- HERO SECTION -->
-
 <div class="hero">
 
 <div class="search-container">
-<input type="text" placeholder="Search products (e.g. iPhone 15)">
-<button class="search-btn">🔍</button>
+<input id="searchInput" type="text" placeholder="Search products (e.g. iPhone 15)">
+<button class="search-btn" onclick="searchProduct()">🔍</button>
 </div>
 
 <p>Compare prices and delivery times across retailers in seconds.</p>
@@ -197,13 +175,11 @@ UseALT
 
 </div>
 
-<!-- RESULTS -->
-
 <div class="results">
 
 <h2>Example comparison</h2>
 
-<p>Product: iPhone 15</p>
+<p id="productTitle">Product: iPhone 15</p>
 
 <table>
 
@@ -248,6 +224,15 @@ document.getElementById("menu").style.width="250px";
 
 function closeMenu(){
 document.getElementById("menu").style.width="0";
+}
+
+function searchProduct(){
+let product = document.getElementById("searchInput").value;
+
+if(product !== ""){
+document.getElementById("productTitle").innerText = "Product: " + product;
+}
+
 }
 
 </script>

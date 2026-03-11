@@ -21,81 +21,26 @@ box-shadow:0 2px 5px rgba(0,0,0,0.1);
 padding:15px 0;
 font-size:28px;
 font-weight:bold;
-z-index:1000;
-}
-
-.menu-btn{
-position:absolute;
-left:20px;
-top:15px;
-font-size:28px;
-cursor:pointer;
-}
-
-.side-menu{
-height:100%;
-width:0;
-position:fixed;
-top:0;
-left:0;
-background:#111;
-overflow-x:hidden;
-transition:0.3s;
-padding-top:60px;
-}
-
-.close-btn{
-position:absolute;
-top:15px;
-right:25px;
-font-size:35px;
-cursor:pointer;
-color:white;
-}
-
-.side-menu a{
-padding:12px 25px;
-text-decoration:none;
-font-size:20px;
-color:white;
-display:block;
-}
-
-.side-menu a:hover{
-background:#333;
 }
 
 .hero{
-margin-top:160px;
+margin-top:140px;
 }
 
-.search-container{
-display:flex;
-justify-content:center;
+.search-box{
 margin-top:20px;
 }
 
-.search-container input{
+input{
 width:500px;
 padding:16px;
 font-size:18px;
-border-radius:30px 0 0 30px;
+border-radius:30px;
 border:1px solid #ccc;
-outline:none;
 }
 
-.search-btn{
-padding:16px 20px;
-font-size:18px;
-border:none;
-border-radius:0 30px 30px 0;
-background:#0077ff;
-color:white;
-cursor:pointer;
-}
-
-.install-btn{
-margin-top:25px;
+button{
+margin-top:20px;
 padding:14px 30px;
 font-size:16px;
 border:none;
@@ -105,16 +50,11 @@ color:white;
 cursor:pointer;
 }
 
-.results{
-margin-top:120px;
-}
-
 table{
 margin:auto;
+margin-top:50px;
 border-collapse:collapse;
 background:white;
-border-radius:10px;
-overflow:hidden;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
@@ -129,16 +69,6 @@ padding:15px 25px;
 border-bottom:1px solid #eee;
 }
 
-tr:hover{
-background:#f0f6ff;
-}
-
-.summary{
-margin-top:20px;
-font-weight:bold;
-font-size:18px;
-}
-
 </style>
 
 </head>
@@ -146,42 +76,24 @@ font-size:18px;
 <body>
 
 <div class="header">
-<span class="menu-btn" onclick="openMenu()">☰</span>
 UseALT
-</div>
-
-<div id="menu" class="side-menu">
-
-<span class="close-btn" onclick="closeMenu()">×</span>
-
-<a href="#">Home</a>
-<a href="#">Search</a>
-<a href="#">Install Extension</a>
-<a href="#">How ALT Works</a>
-<a href="#">About</a>
-
 </div>
 
 <div class="hero">
 
-<div class="search-container">
-<input id="searchInput" type="text" placeholder="Search products (e.g. iPhone 15)">
-<button class="search-btn" onclick="searchProduct()">🔍</button>
-</div>
+<h2>Compare prices and delivery across retailers</h2>
 
-<p>Compare prices and delivery times across retailers in seconds.</p>
+<div class="search-box">
 
-<button class="install-btn">Install Extension</button>
+<input id="productLink" placeholder="Paste product link here">
 
 </div>
 
-<div class="results">
+<button onclick="searchProduct()">Search</button>
 
-<h2>Example comparison</h2>
+</div>
 
-<p id="productTitle">Product: iPhone 15</p>
-
-<table>
+<table id="resultsTable">
 
 <tr>
 <th>Retailer</th>
@@ -189,53 +101,57 @@ UseALT
 <th>Delivery</th>
 </tr>
 
-<tr>
-<td>Amazon</td>
-<td>£799</td>
-<td>Tomorrow</td>
-</tr>
-
-<tr>
-<td>Currys</td>
-<td>£789</td>
-<td>2 days</td>
-</tr>
-
-<tr>
-<td>Argos</td>
-<td>£799</td>
-<td>Today</td>
-</tr>
-
 </table>
-
-<div class="summary">
-💰 Cheapest: Currys<br>
-⚡ Fastest: Argos
-</div>
-
-</div>
 
 <script>
 
-function openMenu(){
-document.getElementById("menu").style.width="250px";
-}
+async function searchProduct(){
 
-function closeMenu(){
-document.getElementById("menu").style.width="0";
-}
+let link = document.getElementById("productLink").value;
 
-function searchProduct(){
-let product = document.getElementById("searchInput").value;
+let response = await fetch("http://localhost:3000/search",{
 
-if(product !== ""){
-document.getElementById("productTitle").innerText = "Product: " + product;
-}
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+url:link
+})
+
+});
+
+let data = await response.json();
+
+let table = document.getElementById("resultsTable");
+
+table.innerHTML=`
+<tr>
+<th>Retailer</th>
+<th>Price</th>
+<th>Delivery</th>
+</tr>
+`;
+
+data.results.forEach(item => {
+
+let row = `
+<tr>
+<td>${item.retailer}</td>
+<td>£${item.price}</td>
+<td>${item.delivery}</td>
+</tr>
+`;
+
+table.innerHTML += row;
+
+});
 
 }
 
 </script>
 
 </body>
+
 </html>

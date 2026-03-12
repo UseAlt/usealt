@@ -1,16 +1,20 @@
-const express = require("express")
-const cors = require("cors")
+const express=require("express")
+const cors=require("cors")
 
-const app = express()
+const app=express()
 
 app.use(cors())
 app.use(express.json())
 
+app.get("/",(req,res)=>{
+res.send("ALT backend is running")
+})
+
 app.post("/search",(req,res)=>{
 
-const url = req.body.url
+const product=req.body.product
 
-const results = [
+const results=[
 
 {
 retailer:"Amazon",
@@ -33,6 +37,7 @@ delivery:"Today"
 ]
 
 res.json({
+product:product,
 results:results
 })
 
@@ -40,6 +45,6 @@ results:results
 
 app.listen(3000,()=>{
 
-console.log("ALT server running")
+console.log("ALT server running on port 3000")
 
 })

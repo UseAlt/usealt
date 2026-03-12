@@ -12,6 +12,8 @@ background:#f5f5f5;
 text-align:center;
 }
 
+/* HEADER */
+
 .header{
 position:fixed;
 top:0;
@@ -21,26 +23,93 @@ box-shadow:0 2px 5px rgba(0,0,0,0.1);
 padding:15px 0;
 font-size:28px;
 font-weight:bold;
+z-index:1000;
 }
+
+/* MENU BUTTON */
+
+.menu-btn{
+position:absolute;
+left:20px;
+top:15px;
+font-size:28px;
+cursor:pointer;
+}
+
+/* SIDE MENU */
+
+.side-menu{
+height:100%;
+width:0;
+position:fixed;
+top:0;
+left:0;
+background:#111;
+overflow-x:hidden;
+transition:0.3s;
+padding-top:60px;
+}
+
+.side-menu a{
+padding:12px 25px;
+text-decoration:none;
+font-size:20px;
+color:white;
+display:block;
+}
+
+.side-menu a:hover{
+background:#333;
+}
+
+/* CLOSE BUTTON */
+
+.close-btn{
+position:absolute;
+top:15px;
+right:25px;
+font-size:35px;
+cursor:pointer;
+color:white;
+}
+
+/* HERO */
 
 .hero{
-margin-top:140px;
+margin-top:160px;
 }
 
-.search-box{
+/* SEARCH BAR */
+
+.search-container{
+display:flex;
+justify-content:center;
 margin-top:20px;
 }
 
-input{
+.search-container input{
 width:500px;
 padding:16px;
 font-size:18px;
-border-radius:30px;
+border-radius:30px 0 0 30px;
 border:1px solid #ccc;
+outline:none;
 }
 
-button{
-margin-top:20px;
+.search-btn{
+padding:16px 20px;
+font-size:18px;
+border:none;
+border-radius:0 30px 30px 0;
+background:#0077ff;
+color:white;
+cursor:pointer;
+}
+
+/* INSTALL BUTTON */
+
+.install-btn{
+margin-top:25px;
 padding:14px 30px;
 font-size:16px;
 border:none;
@@ -50,11 +119,18 @@ color:white;
 cursor:pointer;
 }
 
+/* RESULTS */
+
+.results{
+margin-top:120px;
+}
+
 table{
 margin:auto;
-margin-top:50px;
 border-collapse:collapse;
 background:white;
+border-radius:10px;
+overflow:hidden;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
@@ -69,29 +145,65 @@ padding:15px 25px;
 border-bottom:1px solid #eee;
 }
 
+tr:hover{
+background:#f0f6ff;
+}
+
+.summary{
+margin-top:20px;
+font-weight:bold;
+font-size:18px;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <div class="header">
+<span class="menu-btn" onclick="openMenu()">☰</span>
 UseALT
 </div>
+
+<!-- SIDE MENU -->
+
+<div id="menu" class="side-menu">
+
+<span class="close-btn" onclick="closeMenu()">×</span>
+
+<a href="#">Home</a>
+<a href="#">Search</a>
+<a href="#">Install Extension</a>
+<a href="#">How ALT Works</a>
+<a href="#">About</a>
+
+</div>
+
+<!-- HERO -->
 
 <div class="hero">
 
 <h2>Compare prices and delivery across retailers</h2>
 
-<div class="search-box">
+<div class="search-container">
+<input id="searchInput" type="text" placeholder="Search products (e.g. iPhone 15)">
+<button class="search-btn" onclick="searchProduct()">🔍</button>
+</div>
 
-<input id="productLink" placeholder="Paste product link here">
+<button class="install-btn">Install Extension</button>
 
 </div>
 
-<button onclick="searchProduct()">Search</button>
+<!-- RESULTS -->
 
-</div>
+<div class="results">
+
+<h2>Comparison</h2>
+
+<p id="productTitle">Search for a product above</p>
 
 <table id="resultsTable">
 
@@ -103,30 +215,55 @@ UseALT
 
 </table>
 
+<div class="summary" id="summary"></div>
+
+</div>
+
 <script>
 
-async function searchProduct(){
+/* MENU FUNCTIONS */
 
-let link = document.getElementById("productLink").value;
+function openMenu(){
+document.getElementById("menu").style.width="250px";
+}
 
-let response = await fetch("http://localhost:3000/search",{
+function closeMenu(){
+document.getElementById("menu").style.width="0";
+}
 
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+/* SEARCH DATA */
 
-body:JSON.stringify({
-url:link
-})
+const products = {
 
-});
+"iphone 15":[
+{retailer:"Amazon",price:799,delivery:"Tomorrow"},
+{retailer:"Currys",price:789,delivery:"2 days"},
+{retailer:"Argos",price:799,delivery:"Today"}
+],
 
-let data = await response.json();
+"macbook air":[
+{retailer:"Amazon",price:999,delivery:"Tomorrow"},
+{retailer:"Currys",price:949,delivery:"3 days"},
+{retailer:"John Lewis",price:979,delivery:"2 days"}
+],
+
+"playstation 5":[
+{retailer:"Amazon",price:479,delivery:"Tomorrow"},
+{retailer:"Argos",price:469,delivery:"Today"},
+{retailer:"Currys",price:479,delivery:"2 days"}
+]
+
+};
+
+function searchProduct(){
+
+let query = document.getElementById("searchInput").value.toLowerCase();
 
 let table = document.getElementById("resultsTable");
 
-table.innerHTML=`
+let summary = document.getElementById("summary");
+
+table.innerHTML = `
 <tr>
 <th>Retailer</th>
 <th>Price</th>
@@ -134,24 +271,49 @@ table.innerHTML=`
 </tr>
 `;
 
-data.results.forEach(item => {
+if(products[query]){
 
-let row = `
-<tr>
+document.getElementById("productTitle").innerText="Product: "+query;
+
+let data = products[query];
+
+let cheapest = data[0];
+let fastest = data[0];
+
+data.forEach(item => {
+
+let row = `<tr>
 <td>${item.retailer}</td>
 <td>£${item.price}</td>
 <td>${item.delivery}</td>
-</tr>
-`;
+</tr>`;
 
 table.innerHTML += row;
 
+if(item.price < cheapest.price) cheapest = item;
+
+if(item.delivery === "Today") fastest = item;
+
 });
+
+summary.innerHTML = `
+💰 Cheapest: ${cheapest.retailer} (£${cheapest.price})<br>
+⚡ Fastest: ${fastest.retailer}
+`;
+
+}
+
+else{
+
+document.getElementById("productTitle").innerText="Product not found";
+
+summary.innerHTML="Try: iPhone 15, MacBook Air, PlayStation 5";
+
+}
 
 }
 
 </script>
 
 </body>
-
 </html>

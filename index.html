@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>UseALT</title>
@@ -7,9 +8,9 @@
 <style>
 
 body{
-font-family: Arial, sans-serif;
+font-family:Arial;
 margin:0;
-background:#f5f5f5;
+background:#f4f4f4;
 text-align:center;
 }
 
@@ -20,10 +21,10 @@ position:fixed;
 top:0;
 width:100%;
 background:white;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
-padding:15px 0;
+padding:20px;
 font-size:28px;
 font-weight:bold;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
 z-index:1000;
 }
 
@@ -32,7 +33,7 @@ z-index:1000;
 .menu-btn{
 position:absolute;
 left:20px;
-top:15px;
+top:20px;
 font-size:28px;
 cursor:pointer;
 }
@@ -51,45 +52,42 @@ transition:0.3s;
 padding-top:60px;
 }
 
-/* MENU LINKS */
-
 .side-menu a{
-padding:12px 25px;
+display:block;
+color:white;
+padding:15px;
 text-decoration:none;
 font-size:20px;
-color:white;
-display:block;
 }
 
 .side-menu a:hover{
 background:#333;
 }
 
-/* HERO SECTION */
+/* HERO */
 
 .hero{
 margin-top:160px;
 }
 
-/* SEARCH BAR */
+/* SEARCH */
 
-.search-container{
+.search-box{
 display:flex;
 justify-content:center;
-margin-top:20px;
+margin-top:30px;
 }
 
-.search-container input{
-width:500px;
-padding:16px;
+.search-box input{
+width:450px;
+padding:15px;
 font-size:18px;
 border-radius:30px 0 0 30px;
 border:1px solid #ccc;
-outline:none;
 }
 
 .search-btn{
-padding:16px 20px;
+padding:15px 25px;
 font-size:18px;
 border:none;
 border-radius:0 30px 30px 0;
@@ -98,53 +96,25 @@ color:white;
 cursor:pointer;
 }
 
-/* INSTALL BUTTON */
-
-.install-btn{
-margin-top:25px;
-padding:14px 30px;
-font-size:16px;
-border:none;
-border-radius:8px;
-background:#0077ff;
-color:white;
-cursor:pointer;
-}
-
-/* RESULTS */
-
-.results{
-margin-top:120px;
-}
+/* TABLE */
 
 table{
 margin:auto;
+margin-top:80px;
 border-collapse:collapse;
 background:white;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 th{
 background:#0077ff;
 color:white;
-padding:15px 25px;
+padding:15px 30px;
 }
 
 td{
-padding:15px 25px;
+padding:15px 30px;
 border-bottom:1px solid #eee;
-}
-
-tr:hover{
-background:#f0f6ff;
-}
-
-.summary{
-margin-top:20px;
-font-weight:bold;
-font-size:18px;
 }
 
 </style>
@@ -152,8 +122,6 @@ font-size:18px;
 </head>
 
 <body>
-
-<!-- HEADER -->
 
 <div class="header">
 
@@ -163,43 +131,28 @@ UseALT
 
 </div>
 
-<!-- SIDE MENU -->
-
 <div id="menu" class="side-menu">
 
 <a href="#">Home</a>
 <a href="#">Search</a>
 <a href="#">Install Extension</a>
-<a href="#">How ALT Works</a>
 <a href="#">About</a>
 
 </div>
-
-<!-- HERO -->
 
 <div class="hero">
 
 <h2>Compare prices and delivery across retailers</h2>
 
-<div class="search-container">
+<div class="search-box">
 
-<input id="searchInput" type="text" placeholder="Search products (e.g. iPhone 15)">
+<input id="searchInput" placeholder="Search product e.g. iPhone 15">
 
-<button class="search-btn" onclick="searchProduct()">🔍</button>
-
-</div>
-
-<button class="install-btn">Install Extension</button>
+<button class="search-btn" onclick="searchProduct()">Search</button>
 
 </div>
 
-<!-- RESULTS -->
-
-<div class="results">
-
-<h2>Comparison</h2>
-
-<p id="productTitle">Search for a product above</p>
+</div>
 
 <table id="resultsTable">
 
@@ -211,62 +164,46 @@ UseALT
 
 </table>
 
-<div class="summary" id="summary"></div>
-
-</div>
-
 <script>
 
-/* MENU TOGGLE */
+/* MENU */
 
 function toggleMenu(){
 
-let menu = document.getElementById("menu")
+let menu=document.getElementById("menu")
 
-if(menu.style.width === "250px"){
-menu.style.width = "0"
+if(menu.style.width==="250px"){
+menu.style.width="0"
 }
 else{
-menu.style.width = "250px"
+menu.style.width="250px"
 }
 
 }
 
-/* DEMO PRODUCTS */
+/* SEARCH */
 
-const products = {
+async function searchProduct(){
 
-"iphone 15":[
-{retailer:"Amazon",price:799,delivery:"Tomorrow"},
-{retailer:"Currys",price:789,delivery:"2 days"},
-{retailer:"Argos",price:799,delivery:"Today"}
-],
+const query=document.getElementById("searchInput").value
 
-"macbook air":[
-{retailer:"Amazon",price:999,delivery:"Tomorrow"},
-{retailer:"Currys",price:949,delivery:"3 days"},
-{retailer:"John Lewis",price:979,delivery:"2 days"}
-],
+const response=await fetch("http://localhost:3000/search",{
 
-"playstation 5":[
-{retailer:"Amazon",price:479,delivery:"Tomorrow"},
-{retailer:"Argos",price:469,delivery:"Today"},
-{retailer:"Currys",price:479,delivery:"2 days"}
-]
+method:"POST",
 
-}
+headers:{
+"Content-Type":"application/json"
+},
 
-/* SEARCH FUNCTION */
+body:JSON.stringify({product:query})
 
-function searchProduct(){
+})
 
-let query = document.getElementById("searchInput").value.toLowerCase()
+const data=await response.json()
 
-let table = document.getElementById("resultsTable")
+const table=document.getElementById("resultsTable")
 
-let summary = document.getElementById("summary")
-
-table.innerHTML = `
+table.innerHTML=`
 <tr>
 <th>Retailer</th>
 <th>Price</th>
@@ -274,50 +211,21 @@ table.innerHTML = `
 </tr>
 `
 
-if(products[query]){
+data.results.forEach(item=>{
 
-document.getElementById("productTitle").innerText="Product: "+query
-
-let data = products[query]
-
-let cheapest = data[0]
-let fastest = data[0]
-
-data.forEach(item => {
-
-let row = `<tr>
+table.innerHTML+=`
+<tr>
 <td>${item.retailer}</td>
 <td>£${item.price}</td>
 <td>${item.delivery}</td>
-</tr>`
-
-table.innerHTML += row
-
-if(item.price < cheapest.price) cheapest = item
-
-if(item.delivery === "Today") fastest = item
-
-})
-
-summary.innerHTML = `
-💰 Cheapest: ${cheapest.retailer} (£${cheapest.price})<br>
-⚡ Fastest: ${fastest.retailer}
+</tr>
 `
 
-}
-
-else{
-
-document.getElementById("productTitle").innerText="Product not found"
-
-summary.innerHTML="Try: iPhone 15, MacBook Air, PlayStation 5"
-
-}
+})
 
 }
 
 </script>
 
 </body>
-
 </html>

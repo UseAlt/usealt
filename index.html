@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>UseALT</title>
 
 <style>
@@ -50,6 +51,8 @@ transition:0.3s;
 padding-top:60px;
 }
 
+/* MENU LINKS */
+
 .side-menu a{
 padding:12px 25px;
 text-decoration:none;
@@ -62,18 +65,7 @@ display:block;
 background:#333;
 }
 
-/* CLOSE BUTTON */
-
-.close-btn{
-position:absolute;
-top:15px;
-right:25px;
-font-size:35px;
-cursor:pointer;
-color:white;
-}
-
-/* HERO */
+/* HERO SECTION */
 
 .hero{
 margin-top:160px;
@@ -164,15 +156,16 @@ font-size:18px;
 <!-- HEADER -->
 
 <div class="header">
-<span class="menu-btn" onclick="openMenu()">☰</span>
+
+<span class="menu-btn" onclick="toggleMenu()">☰</span>
+
 UseALT
+
 </div>
 
 <!-- SIDE MENU -->
 
 <div id="menu" class="side-menu">
-
-<span class="close-btn" onclick="closeMenu()">×</span>
 
 <a href="#">Home</a>
 <a href="#">Search</a>
@@ -189,8 +182,11 @@ UseALT
 <h2>Compare prices and delivery across retailers</h2>
 
 <div class="search-container">
+
 <input id="searchInput" type="text" placeholder="Search products (e.g. iPhone 15)">
+
 <button class="search-btn" onclick="searchProduct()">🔍</button>
+
 </div>
 
 <button class="install-btn">Install Extension</button>
@@ -221,17 +217,22 @@ UseALT
 
 <script>
 
-/* MENU FUNCTIONS */
+/* MENU TOGGLE */
 
-function openMenu(){
-document.getElementById("menu").style.width="250px";
+function toggleMenu(){
+
+let menu = document.getElementById("menu")
+
+if(menu.style.width === "250px"){
+menu.style.width = "0"
+}
+else{
+menu.style.width = "250px"
 }
 
-function closeMenu(){
-document.getElementById("menu").style.width="0";
 }
 
-/* SEARCH DATA */
+/* DEMO PRODUCTS */
 
 const products = {
 
@@ -253,15 +254,17 @@ const products = {
 {retailer:"Currys",price:479,delivery:"2 days"}
 ]
 
-};
+}
+
+/* SEARCH FUNCTION */
 
 function searchProduct(){
 
-let query = document.getElementById("searchInput").value.toLowerCase();
+let query = document.getElementById("searchInput").value.toLowerCase()
 
-let table = document.getElementById("resultsTable");
+let table = document.getElementById("resultsTable")
 
-let summary = document.getElementById("summary");
+let summary = document.getElementById("summary")
 
 table.innerHTML = `
 <tr>
@@ -269,16 +272,16 @@ table.innerHTML = `
 <th>Price</th>
 <th>Delivery</th>
 </tr>
-`;
+`
 
 if(products[query]){
 
-document.getElementById("productTitle").innerText="Product: "+query;
+document.getElementById("productTitle").innerText="Product: "+query
 
-let data = products[query];
+let data = products[query]
 
-let cheapest = data[0];
-let fastest = data[0];
+let cheapest = data[0]
+let fastest = data[0]
 
 data.forEach(item => {
 
@@ -286,28 +289,28 @@ let row = `<tr>
 <td>${item.retailer}</td>
 <td>£${item.price}</td>
 <td>${item.delivery}</td>
-</tr>`;
+</tr>`
 
-table.innerHTML += row;
+table.innerHTML += row
 
-if(item.price < cheapest.price) cheapest = item;
+if(item.price < cheapest.price) cheapest = item
 
-if(item.delivery === "Today") fastest = item;
+if(item.delivery === "Today") fastest = item
 
-});
+})
 
 summary.innerHTML = `
 💰 Cheapest: ${cheapest.retailer} (£${cheapest.price})<br>
 ⚡ Fastest: ${fastest.retailer}
-`;
+`
 
 }
 
 else{
 
-document.getElementById("productTitle").innerText="Product not found";
+document.getElementById("productTitle").innerText="Product not found"
 
-summary.innerHTML="Try: iPhone 15, MacBook Air, PlayStation 5";
+summary.innerHTML="Try: iPhone 15, MacBook Air, PlayStation 5"
 
 }
 
@@ -316,4 +319,5 @@ summary.innerHTML="Try: iPhone 15, MacBook Air, PlayStation 5";
 </script>
 
 </body>
+
 </html>

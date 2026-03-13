@@ -3,161 +3,189 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALT</title>
+<title>ALT - Find the Best Price Instantly</title>
 
 <style>
 
 body{
-font-family:Arial;
+font-family: Arial, Helvetica, sans-serif;
 margin:0;
-background:#f5f5f5;
-text-align:center;
+background:#ffffff;
+color:#000;
 }
 
 /* NAVBAR */
 
-.navbar{
-background:black;
-color:white;
-padding:15px;
+nav{
+background:#000;
+color:#fff;
 display:flex;
 justify-content:space-between;
 align-items:center;
+padding:15px 40px;
 }
 
-.menuButton{
-font-size:20px;
-cursor:pointer;
+nav h1{
+margin:0;
+font-size:22px;
 }
 
-/* SIDE MENU */
-
-.sideMenu{
-position:fixed;
-top:0;
-left:-250px;
-width:250px;
-height:100%;
-background:#111;
-color:white;
-padding:20px;
-transition:0.3s;
+nav ul{
+list-style:none;
+display:flex;
+gap:25px;
+margin:0;
+padding:0;
 }
 
-.sideMenu a{
-display:block;
-color:white;
-padding:10px 0;
+nav a{
+color:#fff;
 text-decoration:none;
+font-weight:bold;
 }
 
-.closeMenu{
-cursor:pointer;
-font-size:20px;
-}
-
-/* HERO */
+/* HERO SECTION */
 
 .hero{
-margin-top:60px;
+text-align:center;
+padding:80px 20px;
 }
+
+.hero h2{
+font-size:40px;
+margin-bottom:25px;
+}
+
+/* SEARCH BAR */
 
 .searchBox{
-padding:12px;
-width:300px;
-font-size:16px;
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:30px;
 }
 
-.searchButton{
+.searchBox input{
+padding:12px;
+width:350px;
+font-size:16px;
+border:1px solid #ccc;
+}
+
+.searchBox button{
 padding:12px 20px;
-background:black;
-color:white;
+background:#000;
+color:#fff;
 border:none;
+font-size:16px;
 cursor:pointer;
 }
 
-/* EXTENSION BUTTON */
+/* INSTALL BUTTON */
 
-.extensionButton{
-margin-top:30px;
-padding:15px 25px;
-background:#4CAF50;
-color:white;
+.install{
+background:#69c14f;
+color:#fff;
 border:none;
+padding:15px 30px;
 font-size:18px;
 cursor:pointer;
+margin-bottom:40px;
 }
 
 /* RESULTS */
 
-table{
+.results{
+width:80%;
 margin:auto;
 margin-top:40px;
-border-collapse:collapse;
-width:500px;
-background:white;
 }
 
-th,td{
-border:1px solid #ddd;
-padding:10px;
+table{
+width:100%;
+border-collapse:collapse;
 }
 
 th{
-background:#222;
-color:white;
+background:#000;
+color:#fff;
+padding:12px;
+}
+
+td{
+border:1px solid #ddd;
+padding:12px;
+text-align:center;
+}
+
+/* DEAL BUTTON */
+
+.viewDeal{
+background:#000;
+color:#fff;
+padding:8px 16px;
+text-decoration:none;
+font-size:14px;
+}
+
+/* FOOTER */
+
+footer{
+margin-top:80px;
+padding:30px;
+background:#000;
+color:#fff;
+text-align:center;
 }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <!-- NAVBAR -->
 
-<div class="navbar">
+<nav>
 
-<div class="menuButton" onclick="openMenu()">☰</div>
+<h1>ALT</h1>
 
-<h2>ALT</h2>
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#">How it Works</a></li>
+<li><a href="#">Extension</a></li>
+<li><a href="#">About</a></li>
+</ul>
 
-</div>
+</nav>
 
-<!-- SIDE MENU -->
 
-<div id="sideMenu" class="sideMenu">
 
-<div class="closeMenu" onclick="closeMenu()">✕</div>
+<!-- HERO -->
 
-<a href="#">Home</a>
-<a href="#">About</a>
-<a href="#">Extension</a>
+<section class="hero">
 
-</div>
+<h2>Find the Best Price Instantly</h2>
 
-<!-- HERO SECTION -->
+<div class="searchBox">
 
-<div class="hero">
+<input id="searchInput" placeholder="Search product...">
 
-<h1>Find the Best Price Instantly</h1>
-
-<input id="searchInput" class="searchBox" placeholder="Search product...">
-
-<button class="searchButton" onclick="searchProduct()">Search</button>
-
-<br>
-
-<button class="extensionButton">
-
-Install ALT Extension
-
-</button>
+<button onclick="searchProduct()">Search</button>
 
 </div>
+
+<button class="install">Install ALT Extension</button>
+
+</section>
+
+
 
 <!-- RESULTS -->
+
+<section class="results">
 
 <table id="resultsTable">
 
@@ -165,30 +193,34 @@ Install ALT Extension
 <th>Retailer</th>
 <th>Price</th>
 <th>Delivery</th>
+<th>Deal</th>
 </tr>
 
 </table>
 
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+<p>© ALT Price Comparison</p>
+
+</footer>
+
+
+
 <script>
 
-/* MENU */
-
-function openMenu(){
-document.getElementById("sideMenu").style.left="0"
-}
-
-function closeMenu(){
-document.getElementById("sideMenu").style.left="-250px"
-}
-
-
-/* SEARCH */
+/* SEARCH FUNCTION CONNECTED TO BACKEND */
 
 async function searchProduct(){
 
-const query=document.getElementById("searchInput").value
+const query = document.getElementById("searchInput").value
 
-const response=await fetch("http://localhost:3000/search",{
+const response = await fetch("http://localhost:3000/search",{
 
 method:"POST",
 
@@ -200,30 +232,28 @@ body:JSON.stringify({product:query})
 
 })
 
-const data=await response.json()
+const data = await response.json()
 
-const table=document.getElementById("resultsTable")
+const table = document.getElementById("resultsTable")
 
-table.innerHTML=`
-
+table.innerHTML = `
 <tr>
 <th>Retailer</th>
 <th>Price</th>
 <th>Delivery</th>
+<th>Deal</th>
 </tr>
-
 `
 
 data.results.forEach(item=>{
 
-table.innerHTML+=`
-
+table.innerHTML += `
 <tr>
 <td>${item.retailer}</td>
 <td>£${item.price}</td>
 <td>${item.delivery}</td>
+<td><a class="viewDeal" href="${item.link}" target="_blank">View Deal</a></td>
 </tr>
-
 `
 
 })
@@ -231,6 +261,7 @@ table.innerHTML+=`
 }
 
 </script>
+
 
 </body>
 </html>

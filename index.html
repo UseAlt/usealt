@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -14,86 +15,65 @@ background:#ffffff;
 color:#000;
 }
 
-/* NAVBAR */
-
 nav{
 background:#000;
 color:#fff;
+padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px 40px;
 }
 
-nav h1{
-margin:0;
+.logo{
 font-size:22px;
-}
-
-nav ul{
-list-style:none;
-display:flex;
-gap:25px;
-margin:0;
-padding:0;
-}
-
-nav a{
-color:#fff;
-text-decoration:none;
 font-weight:bold;
 }
 
-/* HERO SECTION */
+.menu a{
+color:#fff;
+text-decoration:none;
+margin-left:20px;
+}
 
 .hero{
 text-align:center;
-padding:80px 20px;
+padding:60px 20px;
 }
 
-.hero h2{
+.hero h1{
 font-size:40px;
-margin-bottom:25px;
-}
-
-/* SEARCH BAR */
-
-.searchBox{
-display:flex;
-justify-content:center;
-gap:10px;
 margin-bottom:30px;
 }
 
-.searchBox input{
-padding:12px;
-width:350px;
-font-size:16px;
-border:1px solid #ccc;
+.search-box{
+display:flex;
+justify-content:center;
+gap:10px;
 }
 
-.searchBox button{
+.search-box input{
+width:400px;
+padding:12px;
+font-size:16px;
+}
+
+.search-box button{
 padding:12px 20px;
 background:#000;
 color:#fff;
 border:none;
+cursor:pointer;
+}
+
+.extension-btn{
+margin-top:25px;
+background:#4CAF50;
+color:#fff;
+padding:15px 25px;
+border:none;
 font-size:16px;
 cursor:pointer;
 }
-
-/* INSTALL BUTTON */
-
-.install{
-background:#69c14f;
-color:#fff;
-border:none;
-padding:15px 30px;
-font-size:18px;
-cursor:pointer;
-margin-bottom:40px;
-}
-
-/* RESULTS */
 
 .results{
 width:80%;
@@ -113,63 +93,50 @@ padding:12px;
 }
 
 td{
-border:1px solid #ddd;
 padding:12px;
+border-bottom:1px solid #ddd;
 text-align:center;
 }
 
-/* DEAL BUTTON */
-
-.viewDeal{
+.deal-btn{
 background:#000;
 color:#fff;
-padding:8px 16px;
+padding:8px 14px;
 text-decoration:none;
-font-size:14px;
 }
-
-/* FOOTER */
 
 footer{
-margin-top:80px;
-padding:30px;
 background:#000;
 color:#fff;
 text-align:center;
+padding:25px;
+margin-top:50px;
 }
 
 </style>
 
 </head>
 
-
 <body>
-
-
-<!-- NAVBAR -->
 
 <nav>
 
-<h1>ALT</h1>
+<div class="logo">ALT</div>
 
-<ul>
-<li><a href="#">Home</a></li>
-<li><a href="#">How it Works</a></li>
-<li><a href="#">Extension</a></li>
-<li><a href="#">About</a></li>
-</ul>
+<div class="menu">
+<a href="#">Home</a>
+<a href="#">How It Works</a>
+<a href="#">Extension</a>
+<a href="#">About</a>
+</div>
 
 </nav>
 
+<div class="hero">
 
+<h1>Find the Best Price Instantly</h1>
 
-<!-- HERO -->
-
-<section class="hero">
-
-<h2>Find the Best Price Instantly</h2>
-
-<div class="searchBox">
+<div class="search-box">
 
 <input id="searchInput" placeholder="Search product...">
 
@@ -177,15 +144,11 @@ text-align:center;
 
 </div>
 
-<button class="install">Install ALT Extension</button>
+<button class="extension-btn">Install ALT Extension</button>
 
-</section>
+</div>
 
-
-
-<!-- RESULTS -->
-
-<section class="results">
+<div class="results">
 
 <table id="resultsTable">
 
@@ -198,29 +161,23 @@ text-align:center;
 
 </table>
 
-</section>
-
-
-
-<!-- FOOTER -->
+</div>
 
 <footer>
 
-<p>© ALT Price Comparison</p>
+© ALT Price Comparison
 
 </footer>
 
-
-
 <script>
 
-/* SEARCH FUNCTION CONNECTED TO BACKEND */
+/* SEARCH */
 
 async function searchProduct(){
 
-const query = document.getElementById("searchInput").value
+const query=document.getElementById("searchInput").value
 
-const response = await fetch("http://localhost:3000/search",{
+const response=await fetch("http://localhost:3000/search",{
 
 method:"POST",
 
@@ -232,28 +189,41 @@ body:JSON.stringify({product:query})
 
 })
 
-const data = await response.json()
+const data=await response.json()
 
-const table = document.getElementById("resultsTable")
+const table=document.getElementById("resultsTable")
 
-table.innerHTML = `
+table.innerHTML=`
+
 <tr>
 <th>Retailer</th>
 <th>Price</th>
 <th>Delivery</th>
 <th>Deal</th>
 </tr>
+
 `
 
 data.results.forEach(item=>{
 
-table.innerHTML += `
+table.innerHTML+=`
+
 <tr>
+
 <td>${item.retailer}</td>
+
 <td>£${item.price}</td>
+
 <td>${item.delivery}</td>
-<td><a class="viewDeal" href="${item.link}" target="_blank">View Deal</a></td>
+
+<td>
+<a class="deal-btn" href="${item.link}" target="_blank">
+View Deal
+</a>
+</td>
+
 </tr>
+
 `
 
 })
@@ -261,7 +231,6 @@ table.innerHTML += `
 }
 
 </script>
-
 
 </body>
 </html>

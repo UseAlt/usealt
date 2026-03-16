@@ -2,155 +2,87 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-<title>ALT - Find the Best Price Instantly</title>
+<title>UseALT</title>
 
 <style>
 
 body{
-font-family: Arial, Helvetica, sans-serif;
+font-family: Arial;
 margin:0;
 background:#ffffff;
 color:#000;
+text-align:center;
 }
 
-nav{
+header{
 background:#000;
 color:#fff;
 padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
 font-size:22px;
-font-weight:bold;
 }
 
-.menu a{
-color:#fff;
-text-decoration:none;
-margin-left:20px;
+.search-area{
+margin-top:60px;
 }
 
-.hero{
-text-align:center;
-padding:60px 20px;
-}
-
-.hero h1{
-font-size:40px;
-margin-bottom:30px;
-}
-
-.search-box{
-display:flex;
-justify-content:center;
-gap:10px;
-}
-
-.search-box input{
+input{
 width:400px;
 padding:12px;
 font-size:16px;
 }
 
-.search-box button{
+button{
 padding:12px 20px;
-background:#000;
-color:#fff;
-border:none;
-cursor:pointer;
-}
-
-.extension-btn{
-margin-top:25px;
-background:#4CAF50;
-color:#fff;
-padding:15px 25px;
-border:none;
 font-size:16px;
 cursor:pointer;
-}
-
-.results{
-width:80%;
-margin:auto;
-margin-top:40px;
+background:black;
+color:white;
+border:none;
 }
 
 table{
-width:100%;
+margin:40px auto;
 border-collapse:collapse;
+width:80%;
+}
+
+th, td{
+padding:12px;
+border-bottom:1px solid #ddd;
 }
 
 th{
 background:#000;
 color:#fff;
-padding:12px;
 }
 
-td{
-padding:12px;
-border-bottom:1px solid #ddd;
-text-align:center;
-}
-
-.deal-btn{
-background:#000;
-color:#fff;
-padding:8px 14px;
-text-decoration:none;
-}
-
-footer{
-background:#000;
-color:#fff;
-text-align:center;
-padding:25px;
-margin-top:50px;
+a{
+color:black;
+font-weight:bold;
 }
 
 </style>
-
 </head>
+
 
 <body>
 
-<nav>
+<header>
+UseALT
+</header>
 
-<div class="logo">ALT</div>
+<div class="search-area">
 
-<div class="menu">
-<a href="#">Home</a>
-<a href="#">How It Works</a>
-<a href="#">Extension</a>
-<a href="#">About</a>
-</div>
+<h2>Compare prices and delivery times</h2>
 
-</nav>
+<input id="searchInput" placeholder="Search product">
 
-<div class="hero">
-
-<h1>Find the Best Price Instantly</h1>
-
-<div class="search-box">
-
-<input id="searchInput" placeholder="Search product...">
-
-<button onclick="searchProduct()">Search</button>
+<button onclick="searchProducts()">Search</button>
 
 </div>
 
-<button class="extension-btn">Install ALT Extension</button>
-
-</div>
-
-<div class="results">
-
-<table id="resultsTable">
+<table id="results">
 
 <tr>
 <th>Retailer</th>
@@ -161,69 +93,42 @@ margin-top:50px;
 
 </table>
 
-</div>
-
-<footer>
-
-© ALT Price Comparison
-
-</footer>
 
 <script>
 
-/* SEARCH */
+async function searchProducts(){
 
-async function searchProduct(){
+const query = document.getElementById("searchInput").value
 
-const query=document.getElementById("searchInput").value
+if(!query){
+alert("Enter a product to search")
+return
+}
 
-const response=await fetch("http://localhost:3000/search",{
+const response = await fetch("http://localhost:3000/search?q=" + query)
 
-method:"POST",
+const data = await response.json()
 
-headers:{
-"Content-Type":"application/json"
-},
+const table = document.getElementById("results")
 
-body:JSON.stringify({product:query})
-
-})
-
-const data=await response.json()
-
-const table=document.getElementById("resultsTable")
-
-table.innerHTML=`
-
+table.innerHTML = `
 <tr>
 <th>Retailer</th>
 <th>Price</th>
 <th>Delivery</th>
 <th>Deal</th>
 </tr>
-
 `
 
-data.results.forEach(item=>{
+data.forEach(item => {
 
-table.innerHTML+=`
-
+table.innerHTML += `
 <tr>
-
 <td>${item.retailer}</td>
-
 <td>£${item.price}</td>
-
 <td>${item.delivery}</td>
-
-<td>
-<a class="deal-btn" href="${item.link}" target="_blank">
-View Deal
-</a>
-</td>
-
+<td><a href="${item.url}" target="_blank">View Deal</a></td>
 </tr>
-
 `
 
 })

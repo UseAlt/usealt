@@ -1,34 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
-<title>UseALT</title>
+<title>ALT - Find the Best Price</title>
 
 <style>
-
 body{
 font-family: Arial;
+background:#fff;
 margin:0;
-background:#ffffff;
-color:#000;
 text-align:center;
 }
 
-header{
-background:#000;
-color:#fff;
-padding:15px;
-font-size:22px;
+h1{
+margin-top:40px;
 }
 
-.search-area{
-margin-top:60px;
+.search-box{
+margin:20px;
 }
 
 input{
-width:400px;
 padding:12px;
+width:300px;
 font-size:16px;
 }
 
@@ -36,100 +30,116 @@ button{
 padding:12px 20px;
 font-size:16px;
 cursor:pointer;
-background:black;
-color:white;
 border:none;
 }
 
-table{
-margin:40px auto;
-border-collapse:collapse;
-width:80%;
+.search-btn{
+background:black;
+color:white;
 }
 
-th, td{
-padding:12px;
-border-bottom:1px solid #ddd;
-}
-
-th{
-background:#000;
-color:#fff;
-}
-
-a{
+.amazon-btn{
+background:orange;
 color:black;
-font-weight:bold;
+margin-bottom:20px;
+}
+
+.results{
+width:80%;
+margin:auto;
+margin-top:20px;
+}
+
+.card{
+display:flex;
+align-items:center;
+gap:15px;
+border:1px solid #ddd;
+padding:15px;
+margin-bottom:15px;
+text-align:left;
+}
+
+.card img{
+width:100px;
+}
+
+.card h3{
+margin:0;
+font-size:16px;
+}
+
+.card p{
+margin:5px 0;
+}
+
+.view-btn{
+background:black;
+color:white;
+padding:10px;
+text-decoration:none;
 }
 
 </style>
 </head>
 
-
 <body>
 
-<header>
-UseALT
-</header>
+<h1>Find the Best Price Instantly</h1>
 
-<div class="search-area">
-
-<h2>Compare prices and delivery times</h2>
-
-<input id="searchInput" placeholder="Search product">
-
-<button onclick="searchProducts()">Search</button>
-
+<div class="search-box">
+<input id="searchInput" placeholder="Search product...">
+<button class="search-btn" onclick="search()">Search</button>
 </div>
 
-<table id="results">
+<div id="amazonContainer"></div>
 
-<tr>
-<th>Retailer</th>
-<th>Price</th>
-<th>Delivery</th>
-<th>Deal</th>
-</tr>
-
-</table>
-
+<div class="results" id="results"></div>
 
 <script>
 
-async function searchProducts(){
+async function search(){
 
 const query = document.getElementById("searchInput").value
 
-if(!query){
-alert("Enter a product to search")
-return
-}
-
-const response = await fetch("http://localhost:3000/search?q=" + query)
-
-const data = await response.json()
-
-const table = document.getElementById("results")
-
-table.innerHTML = `
-<tr>
-<th>Retailer</th>
-<th>Price</th>
-<th>Delivery</th>
-<th>Deal</th>
-</tr>
+// AMAZON BUTTON
+const amazonLink = `
+<a href="https://www.amazon.co.uk/s?k=${query.replace(/ /g,"+")}" target="_blank">
+<button class="amazon-btn">View on Amazon</button>
+</a>
 `
 
+document.getElementById("amazonContainer").innerHTML = amazonLink
+
+// FETCH FROM BACKEND
+const res = await fetch(`http://localhost:3000/search?q=${query}`)
+const data = await res.json()
+
+const resultsContainer = document.getElementById("results")
+resultsContainer.innerHTML = ""
+
+// DISPLAY RESULTS
 data.forEach(item => {
 
-table.innerHTML += `
-<tr>
-<td>${item.retailer}</td>
-<td>£${item.price}</td>
-<td>${item.delivery}</td>
-<td><a href="${item.url}" target="_blank">View Deal</a></td>
-</tr>
+const card = `
+<div class="card">
+
+<img src="${item.image}">
+
+<div style="flex:1">
+<h3>${item.title}</h3>
+<p><strong>£${item.price}</strong></p>
+<p>${item.delivery}</p>
+</div>
+
+<a href="${item.url}" target="_blank">
+<button class="view-btn">View Deal</button>
+</a>
+
+</div>
 `
+
+resultsContainer.innerHTML += card
 
 })
 

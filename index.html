@@ -7,17 +7,39 @@
 <style>
 body{
 font-family: Arial;
-background:#fff;
 margin:0;
-text-align:center;
+background:#fff;
 }
 
-h1{
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+border-bottom:1px solid #eee;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+.menu a{
+margin-left:20px;
+text-decoration:none;
+color:black;
+font-size:14px;
+}
+
+/* HERO */
+.hero{
+text-align:center;
 margin-top:40px;
 }
 
 .search-box{
-margin:20px;
+margin-top:20px;
 }
 
 input{
@@ -38,39 +60,30 @@ background:black;
 color:white;
 }
 
+/* AMAZON BUTTON */
 .amazon-btn{
 background:orange;
-color:black;
-margin-bottom:20px;
+margin-top:15px;
 }
 
+/* RESULTS */
 .results{
 width:80%;
 margin:auto;
-margin-top:20px;
+margin-top:30px;
 }
 
 .card{
 display:flex;
-align-items:center;
 gap:15px;
 border:1px solid #ddd;
 padding:15px;
 margin-bottom:15px;
-text-align:left;
+align-items:center;
 }
 
 .card img{
 width:100px;
-}
-
-.card h3{
-margin:0;
-font-size:16px;
-}
-
-.card p{
-margin:5px 0;
 }
 
 .view-btn{
@@ -79,12 +92,24 @@ color:white;
 padding:10px;
 text-decoration:none;
 }
-
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+<div class="header">
+<div class="logo">ALT</div>
+
+<div class="menu">
+<a href="#">Home</a>
+<a href="#">About</a>
+<a href="#">Contact</a>
+</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
 <h1>Find the Best Price Instantly</h1>
 
 <div class="search-box">
@@ -93,35 +118,34 @@ text-decoration:none;
 </div>
 
 <div id="amazonContainer"></div>
+</div>
 
+<!-- RESULTS -->
 <div class="results" id="results"></div>
 
 <script>
-
 async function search(){
 
 const query = document.getElementById("searchInput").value
 
 // AMAZON BUTTON
-const amazonLink = `
+document.getElementById("amazonContainer").innerHTML = `
 <a href="https://www.amazon.co.uk/s?k=${query.replace(/ /g,"+")}" target="_blank">
 <button class="amazon-btn">View on Amazon</button>
 </a>
 `
 
-document.getElementById("amazonContainer").innerHTML = amazonLink
-
-// FETCH FROM BACKEND
+// FETCH BACKEND
 const res = await fetch(`http://localhost:3000/search?q=${query}`)
 const data = await res.json()
 
-const resultsContainer = document.getElementById("results")
-resultsContainer.innerHTML = ""
+const results = document.getElementById("results")
+results.innerHTML = ""
 
-// DISPLAY RESULTS
+// SHOW RESULTS
 data.forEach(item => {
 
-const card = `
+results.innerHTML += `
 <div class="card">
 
 <img src="${item.image}">
@@ -138,13 +162,9 @@ const card = `
 
 </div>
 `
-
-resultsContainer.innerHTML += card
-
 })
 
 }
-
 </script>
 
 </body>

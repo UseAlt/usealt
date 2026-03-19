@@ -2,119 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ALT - Find the Best Price</title>
+<title>ALT - The Alternative Way to Shop</title>
 
 <style>
-html{
-scroll-behavior:smooth;
-}
+html{scroll-behavior:smooth;}
+body{font-family:Arial;margin:0;background:#fff;}
 
-body{
-font-family: Arial;
-margin:0;
-background:#fff;
-}
-
-/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
-align-items:center;
 padding:20px 40px;
 border-bottom:1px solid #eee;
 position:sticky;
 top:0;
 background:white;
-z-index:1000;
 }
 
-.logo{
-font-size:22px;
-font-weight:bold;
-}
+.logo{font-size:24px;font-weight:bold;}
 
-/* MENU BUTTONS */
 .menu button{
-margin-left:15px;
+margin-left:20px;
 background:none;
 border:none;
-font-size:14px;
 cursor:pointer;
 }
 
-.menu button:hover{
-text-decoration:underline;
+.hero{text-align:center;margin-top:60px;}
+
+input{padding:12px;width:280px;}
+button{padding:10px;border:none;cursor:pointer;}
+
+.search-btn{background:black;color:white;}
+.amazon-btn{background:orange;margin-top:10px;}
+
+.results{width:85%;margin:auto;margin-top:40px;}
+
+.highlight{
+border:2px solid black;
+padding:15px;
+margin-bottom:20px;
 }
 
-/* HERO */
-.hero{
-text-align:center;
-margin-top:40px;
-}
-
-input{
-padding:12px;
-width:300px;
-font-size:16px;
-}
-
-button{
-padding:10px;
-border:none;
-cursor:pointer;
-}
-
-.search-btn{
+.badge{
+font-size:12px;
+padding:4px 8px;
 background:black;
 color:white;
-margin-left:10px;
-}
-
-.amazon-btn{
-background:orange;
-margin-top:15px;
-}
-
-/* RESULTS */
-.results{
-width:80%;
-margin:auto;
-margin-top:30px;
+display:inline-block;
+margin-bottom:5px;
 }
 
 .card{
 display:flex;
-gap:15px;
+gap:20px;
 border:1px solid #ddd;
 padding:15px;
 margin-bottom:15px;
-align-items:center;
 }
 
-.card img{
-width:100px;
-}
+.card img{width:100px;}
 
-.view-btn{
-background:black;
-color:white;
-}
+.view-btn{background:black;color:white;}
 
-/* SECTIONS */
-.section{
-padding:60px 20px;
-text-align:center;
-}
+.section{padding:80px;text-align:center;}
 </style>
-
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
 <div class="logo">ALT</div>
-
 <div class="menu">
 <button onclick="scrollToSection('home')">Home</button>
 <button onclick="scrollToSection('about')">About</button>
@@ -122,28 +79,22 @@ text-align:center;
 </div>
 </div>
 
-<!-- HOME -->
 <div id="home" class="hero">
-
-<h1>Find the Best Price Instantly</h1>
+<h1>Compare prices and delivery in seconds</h1>
 
 <input id="searchInput" placeholder="Search product...">
 <button class="search-btn" onclick="search()">Search</button>
 
 <div id="amazonContainer"></div>
-
 </div>
 
-<!-- RESULTS -->
-<div class="results" id="results"></div>
+<div id="results" class="results"></div>
 
-<!-- ABOUT -->
 <div id="about" class="section">
 <h2>About ALT</h2>
-<p>ALT helps you find the best price and fastest delivery instantly across retailers.</p>
+<p>Find the best price AND fastest delivery.</p>
 </div>
 
-<!-- CONTACT -->
 <div id="contact" class="section">
 <h2>Contact</h2>
 <p>Email: alt@support.com</p>
@@ -151,63 +102,99 @@ text-align:center;
 
 <script>
 
-// MENU SCROLL FUNCTION
+// SCROLL
 function scrollToSection(id){
-document.getElementById(id).scrollIntoView({
-behavior: "smooth"
-})
+document.getElementById(id).scrollIntoView({behavior:"smooth"})
 }
 
-// SEARCH FUNCTION
+// DELIVERY PARSE
+function getDeliveryDays(delivery){
+if(!delivery) return 5
+const match = delivery.match(/\d+/)
+return match ? parseInt(match[0]) : 5
+}
+
+// CLEAN TITLE (REMOVE SPAM WORDS)
+function cleanTitle(title){
+return title
+.replace(/new|brand new|fast|delivery|sale/gi,"")
+.trim()
+}
+
+// GROUP SIMILAR PRODUCTS
+function groupProducts(data){
+
+const groups = {}
+
+data.forEach(item=>{
+const key = cleanTitle(item.title).slice(0,40)
+
+if(!groups[key]){
+groups[key] = item
+}else{
+if(item.price < groups[key].price){
+groups[key] = item
+}
+}
+})
+
+return Object.values(groups)
+}
+
+// SEARCH
 async function search(){
 
 const query = document.getElementById("searchInput").value
 
-// AMAZON BUTTON
 document.getElementById("amazonContainer").innerHTML = `
 <a href="https://www.amazon.co.uk/s?k=${query.replace(/ /g,"+")}" target="_blank">
 <button class="amazon-btn">View on Amazon</button>
 </a>
 `
 
-// FETCH FROM BACKEND
 const res = await fetch(`http://localhost:3000/search?q=${query}`)
-const data = await res.json()
+let data = await res.json()
 
-const results = document.getElementById("results")
-results.innerHTML = ""
+if(!data.length){
+document.getElementById("results").innerHTML = "No results"
+return
+}
 
-// DISPLAY RESULTS
-// SORT BY CHEAPEST
-data.sort((a,b) => a.price - b.price)
+// GROUP PRODUCTS
+data = groupProducts(data)
 
-// BEST DEAL = FIRST ITEM
-const best = data[0]
+// FIND CHEAPEST
+const cheapest = [...data].sort((a,b)=>a.price-b.price)[0]
 
-// SHOW BEST DEAL FIRST
-let resultsHTML = `
-<div style="border:2px solid green; padding:15px; margin-bottom:20px;">
-<h2>⭐ Best Deal</h2>
+// FIND FASTEST
+const fastest = [...data].sort((a,b)=>getDeliveryDays(a.delivery)-getDeliveryDays(b.delivery))[0]
 
-<div class="card">
-<img src="${best.image}">
-<div style="flex:1">
-<h3>${best.title}</h3>
-<p><strong>£${best.price}</strong></p>
-<p>${best.delivery}</p>
-</div>
+// BEST SCORE
+data.forEach(item=>{
+item.score = item.price + (getDeliveryDays(item.delivery)*5)
+})
 
-<a href="${best.url}" target="_blank">
-<button class="view-btn">View Deal</button>
-</a>
-</div>
+const best = [...data].sort((a,b)=>a.score-b.score)[0]
 
-</div>
-`
+// HTML
+let html = ""
 
-// SHOW REST
-data.slice(1).forEach(item => {
-resultsHTML += `
+html += highlightCard(best,"⭐ Best Overall")
+html += highlightCard(cheapest,"💸 Cheapest")
+html += highlightCard(fastest,"⚡ Fastest")
+
+data.forEach(item=>{
+html += productCard(item)
+})
+
+document.getElementById("results").innerHTML = html
+}
+
+// COMPONENTS
+function highlightCard(item,label){
+return `
+<div class="highlight">
+<div class="badge">${label}</div>
 <div class="card">
 <img src="${item.image}">
 <div style="flex:1">
@@ -215,35 +202,28 @@ resultsHTML += `
 <p><strong>£${item.price}</strong></p>
 <p>${item.delivery}</p>
 </div>
-
 <a href="${item.url}" target="_blank">
 <button class="view-btn">View Deal</button>
 </a>
 </div>
+</div>
 `
-})
+}
 
-document.getElementById("results").innerHTML = resultsHTML
-
-results.innerHTML += `
+function productCard(item){
+return `
 <div class="card">
-
 <img src="${item.image}">
-
 <div style="flex:1">
 <h3>${item.title}</h3>
 <p><strong>£${item.price}</strong></p>
 <p>${item.delivery}</p>
 </div>
-
 <a href="${item.url}" target="_blank">
 <button class="view-btn">View Deal</button>
 </a>
-
 </div>
 `
-})
-
 }
 
 </script>

@@ -178,7 +178,52 @@ const results = document.getElementById("results")
 results.innerHTML = ""
 
 // DISPLAY RESULTS
-data.forEach(item => {
+// SORT BY CHEAPEST
+data.sort((a,b) => a.price - b.price)
+
+// BEST DEAL = FIRST ITEM
+const best = data[0]
+
+// SHOW BEST DEAL FIRST
+let resultsHTML = `
+<div style="border:2px solid green; padding:15px; margin-bottom:20px;">
+<h2>⭐ Best Deal</h2>
+
+<div class="card">
+<img src="${best.image}">
+<div style="flex:1">
+<h3>${best.title}</h3>
+<p><strong>£${best.price}</strong></p>
+<p>${best.delivery}</p>
+</div>
+
+<a href="${best.url}" target="_blank">
+<button class="view-btn">View Deal</button>
+</a>
+</div>
+
+</div>
+`
+
+// SHOW REST
+data.slice(1).forEach(item => {
+resultsHTML += `
+<div class="card">
+<img src="${item.image}">
+<div style="flex:1">
+<h3>${item.title}</h3>
+<p><strong>£${item.price}</strong></p>
+<p>${item.delivery}</p>
+</div>
+
+<a href="${item.url}" target="_blank">
+<button class="view-btn">View Deal</button>
+</a>
+</div>
+`
+})
+
+document.getElementById("results").innerHTML = resultsHTML
 
 results.innerHTML += `
 <div class="card">

@@ -10,9 +10,9 @@ scroll-behavior:smooth;
 }
 
 body{
-font-family: Arial;
+font-family: Arial, sans-serif;
 margin:0;
-background:#fff;
+background:#f8f8f8;
 }
 
 /* HEADER */
@@ -21,10 +21,10 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 padding:20px 40px;
+background:white;
 border-bottom:1px solid #eee;
 position:sticky;
 top:0;
-background:white;
 z-index:1000;
 }
 
@@ -33,71 +33,89 @@ font-size:22px;
 font-weight:bold;
 }
 
-/* MENU */
 .menu button{
 margin-left:15px;
 background:none;
 border:none;
-font-size:14px;
 cursor:pointer;
-}
-
-.menu button:hover{
-text-decoration:underline;
+font-size:14px;
 }
 
 /* HERO */
 .hero{
 text-align:center;
-margin-top:40px;
+padding:40px 20px;
+background:white;
 }
 
 input{
 padding:12px;
 width:300px;
 font-size:16px;
-}
-
-button{
-padding:10px;
-border:none;
-cursor:pointer;
+border:1px solid #ddd;
+border-radius:6px;
 }
 
 .search-btn{
+padding:12px 20px;
+margin-left:10px;
 background:black;
 color:white;
-margin-left:10px;
+border-radius:6px;
 }
 
+/* AMAZON */
 .amazon-btn{
 background:orange;
 margin-top:15px;
+padding:10px 20px;
+border-radius:6px;
+}
+
+/* SORT BAR */
+.sort-bar{
+text-align:center;
+margin-top:20px;
+}
+
+.sort-bar button{
+margin:5px;
+padding:8px 15px;
+border-radius:6px;
+border:1px solid #ddd;
+background:white;
+cursor:pointer;
 }
 
 /* RESULTS */
 .results{
-width:80%;
+width:85%;
 margin:auto;
 margin-top:30px;
 }
 
+/* CARD */
 .card{
 display:flex;
 gap:15px;
-border:1px solid #ddd;
+background:white;
+border-radius:10px;
 padding:15px;
 margin-bottom:15px;
+box-shadow:0 2px 5px rgba(0,0,0,0.05);
 align-items:center;
 }
 
 .card img{
 width:100px;
+border-radius:6px;
 }
 
 .view-btn{
 background:black;
 color:white;
+padding:10px;
+border-radius:6px;
 }
 
 /* BEST DEAL */
@@ -128,7 +146,7 @@ text-align:center;
 </div>
 </div>
 
-<!-- HOME -->
+<!-- HERO -->
 <div id="home" class="hero">
 
 <h1>Find the Best Price Instantly</h1>
@@ -140,13 +158,20 @@ text-align:center;
 
 </div>
 
+<!-- SORT -->
+<div class="sort-bar">
+<button onclick="sortResults('best')">Best</button>
+<button onclick="sortResults('price')">Cheapest</button>
+<button onclick="sortResults('delivery')">Fastest</button>
+</div>
+
 <!-- RESULTS -->
 <div class="results" id="results"></div>
 
 <!-- ABOUT -->
 <div id="about" class="section">
 <h2>About ALT</h2>
-<p>ALT helps you find the best price and fastest delivery instantly across retailers.</p>
+<p>ALT helps you find the best price and fastest delivery instantly.</p>
 </div>
 
 <!-- CONTACT -->
@@ -157,14 +182,12 @@ text-align:center;
 
 <script>
 
-// MENU SCROLL
+let currentResults = []
+
 function scrollToSection(id){
-document.getElementById(id).scrollIntoView({
-behavior:"smooth"
-})
+document.getElementById(id).scrollIntoView({behavior:"smooth"})
 }
 
-// SEARCH FUNCTION
 async function search(){
 
 const query = document.getElementById("searchInput").value
@@ -176,14 +199,44 @@ document.getElementById("amazonContainer").innerHTML = `
 </a>
 `
 
-// FETCH BACKEND
 const res = await fetch(`http://localhost:3000/search?q=${query}`)
 const data = await res.json()
+
+currentResults = data
+
+displayResults(data)
+
+}
+
+function sortResults(type){
+
+let sorted = [...currentResults]
+
+if(type === "price"){
+sorted.sort((a,b)=> a.price - b.price)
+}
+
+if(type === "delivery"){
+sorted.sort((a,b)=>{
+const aDays = parseInt(a.delivery) || 999
+const bDays = parseInt(b.delivery) || 999
+return aDays - bDays
+})
+}
+
+if(type === "best"){
+sorted.sort((a,b)=> a.score - b.score)
+}
+
+displayResults(sorted)
+
+}
+
+function displayResults(data){
 
 const results = document.getElementById("results")
 results.innerHTML = ""
 
-// DISPLAY RESULTS
 data.forEach(item => {
 
 results.innerHTML += `
@@ -206,6 +259,7 @@ ${item.best ? '<p class="best">⭐ BEST DEAL</p>' : ''}
 
 </div>
 `
+
 })
 
 }
